@@ -1,0 +1,28 @@
+Package: nycOpenData
+Type: Package
+Title: Convenient Access to NYC Open Data API Endpoints
+Version: 0.1.2
+Authors@R: 
+    person("Christian", "Martinez", 
+           email = "c.martinez0@outlook.com", 
+           role = c("aut", "cre"))
+Description: Provides a unified set of helper functions to access datasets 
+    from the NYC Open Data platform <https://opendata.cityofnewyork.us/>. 
+    Functions return results as tidy tibbles and support optional filtering, 
+    sorting, and row limits via the Socrata API. The package includes endpoints 
+    for 311 service requests, DOB job applications, juvenile justice metrics, 
+    school safety, environmental data, event permitting, and additional 
+    citywide datasets.
+License: MIT + file LICENSE
+Encoding: UTF-8
+RoxygenNote: 7.3.3
+Imports: httr, jsonlite, tibble
+Suggests: knitr, rmarkdown
+URL: https://github.com/martinezc1/nycOpenData
+BugReports: https://github.com/martinezc1/nycOpenData/issues
+NeedsCompilation: no
+Packaged: 2025-11-13 04:15:08 UTC; christianmartinez
+Author: Christian Martinez [aut, cre]
+Maintainer: Christian Martinez <c.martinez0@outlook.com>
+Repository: CRAN
+Date/Publication: 2025-11-17 21:30:02 UTC
