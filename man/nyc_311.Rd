@@ -26,9 +26,9 @@ Data is updated daily and includes agency, complaint type, location, and resolut
 }
 \examples{
 
-# Quick example (fetch 10 rows)
-small_sample <- nyc_311(limit = 10)
-head(small_sample)
+# Quick example (fetch 3 rows)
+small_sample <- nyc_311(limit = 3)
+head(small_sample,3)
 
 \donttest{
 nyc_311(limit = 5000)

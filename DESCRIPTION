@@ -1,7 +1,7 @@
 Package: nycOpenData
 Type: Package
 Title: Convenient Access to NYC Open Data API Endpoints
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: 
     person("Christian", "Martinez", 
            email = "c.martinez0@outlook.com", 
@@ -21,8 +21,8 @@ Suggests: knitr, rmarkdown
 URL: https://github.com/martinezc1/nycOpenData
 BugReports: https://github.com/martinezc1/nycOpenData/issues
 NeedsCompilation: no
-Packaged: 2025-11-13 04:15:08 UTC; christianmartinez
+Packaged: 2026-01-10 03:23:40 UTC; christianmartinez
 Author: Christian Martinez [aut, cre]
 Maintainer: Christian Martinez <c.martinez0@outlook.com>
 Repository: CRAN
-Date/Publication: 2025-11-17 21:30:02 UTC
+Date/Publication: 2026-01-10 03:40:02 UTC
