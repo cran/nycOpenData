@@ -7,12 +7,18 @@
 NYC Open Data: <https://data.cityofnewyork.us/Social-Services/Runaway-and-Homeless-Youth-RHY-Daily-Census/5rw7-99k7/about_data>
 }
 \usage{
-nyc_runaway_and_homeless_youth_daily_census(limit = 10000, filters = list())
+nyc_runaway_and_homeless_youth_daily_census(
+  limit = 10000,
+  filters = list(),
+  timeout_sec = 30
+)
 }
 \arguments{
 \item{limit}{Number of rows to retrieve (default = 10,000).}
 
 \item{filters}{Optional list of field-value pairs to filter results.}
+
+\item{timeout_sec}{Request timeout in seconds (default = 30).}
 }
 \value{
 A tibble containing Runaway and Homeless Youth (RHY) Daily Census data.
@@ -25,12 +31,16 @@ This data tracks the number of beds available for runaway and homeless youth and
 Data include Crisis Shelters, Crisis Shelters HYA (Homeless Young Adults), Transitional Independent Living, and Transitional Independent Living HYA.
 }
 \examples{
-# Quick example (fetch 10 rows)
-small_sample <- nyc_runaway_and_homeless_youth_daily_census(limit = 10)
-head(small_sample)
-
+# Examples that hit the live NYC Open Data API are wrapped so CRAN checks
+# do not fail when the network is unavailable or slow.
 \donttest{
-nyc_runaway_and_homeless_youth_daily_census(limit = 5000)
-nyc_runaway_and_homeless_youth_daily_census(filters = list(program_type = "Crisis Shelters"))
+if (curl::has_internet()) {
+  # Quick example (fetch 10 rows)
+  small_sample <- nyc_runaway_and_homeless_youth_daily_census(limit = 10)
+  head(small_sample)
+
+  nyc_runaway_and_homeless_youth_daily_census(limit = 5000)
+  nyc_runaway_and_homeless_youth_daily_census(filters = list(program_type = "Crisis Shelters"))
+}
 }
 }

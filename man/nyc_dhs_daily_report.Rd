@@ -7,12 +7,14 @@
 NYC Open Data: <https://data.cityofnewyork.us/Social-Services/DHS-Daily-Report/k46n-sa2m/about_data>
 }
 \usage{
-nyc_dhs_daily_report(limit = 10000, filters = list())
+nyc_dhs_daily_report(limit = 10000, filters = list(), timeout_sec = 30)
 }
 \arguments{
 \item{limit}{Number of rows to retrieve (default = 10,000).}
 
 \item{filters}{Optional list of field-value pairs to filter results.}
+
+\item{timeout_sec}{Request timeout in seconds (default = 30).}
 }
 \value{
 A tibble containing Department of Homeless Services (DHS) Daily Report data.
@@ -21,15 +23,20 @@ A tibble containing Department of Homeless Services (DHS) Daily Report data.
 Department of Homeless Services (DHS) Daily Report
 }
 \details{
-This dataset includes the daily number of families and individuals residing in the Department of Homeless Services (DHS) shelter system and the daily number of families applying to the DHS shelter system.
+This dataset includes the daily number of families and individuals residing in the Department of Homeless Services (DHS)
+shelter system and the daily number of families applying to the DHS shelter system.
 }
 \examples{
-# Quick example (fetch 10 rows)
-small_sample <- nyc_dhs_daily_report(limit = 10)
-head(small_sample)
-
+# Examples that hit the live NYC Open Data API are wrapped so CRAN checks
+# do not fail when the network is unavailable or slow.
 \donttest{
-nyc_dhs_daily_report(limit = 5000)
-nyc_dhs_daily_report(filters = list(total_adults_in_shelter = 55694))
+if (curl::has_internet()) {
+  # Quick example (fetch 10 rows)
+  small_sample <- nyc_dhs_daily_report(limit = 10)
+  head(small_sample)
+
+  nyc_dhs_daily_report(limit = 5000)
+  nyc_dhs_daily_report(filters = list(total_adults_in_shelter = 55694))
+}
 }
 }

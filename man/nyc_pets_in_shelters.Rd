@@ -7,12 +7,14 @@
 NYC Open Data: <https://data.cityofnewyork.us/Social-Services/Local-Law-97-of-2021-Pets-in-Shelter-Report/5nux-zfmw/about_data>
 }
 \usage{
-nyc_pets_in_shelters(limit = 10000, filters = list())
+nyc_pets_in_shelters(limit = 10000, filters = list(), timeout_sec = 30)
 }
 \arguments{
 \item{limit}{Number of rows to retrieve (default = 10,000).}
 
 \item{filters}{Optional list of field-value pairs to filter results.}
+
+\item{timeout_sec}{Request timeout in seconds (default = 30).}
 }
 \value{
 A tibble containing Local Law 97 of 2021 - Pets in Shelter Report data.
@@ -26,12 +28,16 @@ Data is aggregated at the quarterly level (ie: 2024 Q3).
 The unit of analysis is a fiscal year quarter: Quarter 1 (Q1): July - September; Quarter 2 (Q2): October - December; Quarter 3 (Q3): January - March; Quarter 4 (Q4): April - June.
 }
 \examples{
-# Quick example (fetch 10 rows)
-small_sample <- nyc_pets_in_shelters(limit = 10)
-head(small_sample)
-
+# Examples that hit the live NYC Open Data API are wrapped so CRAN checks
+# do not fail when the network is unavailable or slow.
 \donttest{
-nyc_pets_in_shelters(limit = 5000)
-nyc_pets_in_shelters(filters = list(date_quarter = "Qtr 1"))
+if (curl::has_internet()) {
+  # Quick example (fetch 10 rows)
+  small_sample <- nyc_pets_in_shelters(limit = 10)
+  head(small_sample)
+
+  nyc_pets_in_shelters(limit = 5000)
+  nyc_pets_in_shelters(filters = list(date_quarter = "Qtr 1"))
+}
 }
 }
