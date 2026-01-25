@@ -19,11 +19,10 @@
 #' # do not fail when the network is unavailable or slow.
 #' \donttest{
 #' if (curl::has_internet()) {
-#'   # Quick example (fetch 10 rows)
-#'   small_sample <- nyc_borough_community_report(limit = 10)
+#'   # Quick example (fetch 2 rows)
+#'   small_sample <- nyc_borough_community_report(limit = 2)
 #'   head(small_sample)
 #'
-#'   nyc_borough_community_report(limit = 5000)
 #'   nyc_borough_community_report(filters = list(borough = "Bronx"))
 #' }
 #' }

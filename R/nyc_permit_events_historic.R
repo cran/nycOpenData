@@ -15,18 +15,26 @@
 #' @source NYC Open Data: <https://data.cityofnewyork.us/resource/bkfu-528j>
 #'
 #' @examples
-#' # Examples that hit the live NYC Open Data API are wrapped so CRAN checks
-#' # do not fail when the network is unavailable or slow.
 #' \donttest{
 #' if (curl::has_internet()) {
-#'   # Quick example (fetch 2 rows)
-#'   small_sample <- nyc_permit_events_historic(limit = 2)
-#'   small_sample
+#'   small_sample <- try(
+#'     nyc_permit_events_historic(limit = 2, timeout_sec = 10),
+#'     silent = TRUE
+#'   )
+#'   if (!inherits(small_sample, "try-error")) print(small_sample)
 #'
-#'   nyc_permit_events_historic(limit = 5000)
-#'   nyc_permit_events_historic(filters = list(event_type = "Construction"))
+#'   filtered <- try(
+#'     nyc_permit_events_historic(
+#'       limit = 2,
+#'       filters = list(event_type = "Construction"),
+#'       timeout_sec = 10
+#'     ),
+#'     silent = TRUE
+#'   )
+#'   if (!inherits(filtered, "try-error")) print(filtered)
 #' }
 #' }
+#'
 #' @export
 nyc_permit_events_historic <- function(limit = 10000, filters = list(), timeout_sec = 60) {
   endpoint <- "https://data.cityofnewyork.us/resource/bkfu-528j.json"

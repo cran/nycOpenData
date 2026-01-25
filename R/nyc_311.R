@@ -8,10 +8,10 @@
 #' @return A tibble containing 311 Service Request data.
 #'
 #' @details
-#' This dataset contains all service requests made to NYC 311 since 2010.
+#' This dataset contains all service requests made to NYC 311 since 2012.
 #' Data is updated daily and includes agency, complaint type, location, and resolution.
 #'
-#' @source NYC Open Data: <https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9/about_data>
+#' @source NYC Open Data: <https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2020-to-Present/erm2-nwe9/about_data>
 #'
 #' @examples
 #' # Examples that hit the live NYC Open Data API are wrapped so CRAN checks
@@ -21,6 +21,7 @@
 #'   # Quick example (fetch 2 rows)
 #'   small_sample <- nyc_311(limit = 2)
 #'   small_sample
+#'
 #'   nyc_311(filters = list(agency = "NYPD", city = "BROOKLYN"))
 #' }
 #' }

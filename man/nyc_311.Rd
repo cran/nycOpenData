@@ -4,7 +4,7 @@
 \alias{nyc_311}
 \title{NYC 311 Service Requests}
 \source{
-NYC Open Data: <https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9/about_data>
+NYC Open Data: <https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2020-to-Present/erm2-nwe9/about_data>
 }
 \usage{
 nyc_311(limit = 10000, filters = list(), timeout_sec = 30)
@@ -23,7 +23,7 @@ A tibble containing 311 Service Request data.
 Downloads NYC 311 Service Request data from NYC Open Data.
 }
 \details{
-This dataset contains all service requests made to NYC 311 since 2010.
+This dataset contains all service requests made to NYC 311 since 2012.
 Data is updated daily and includes agency, complaint type, location, and resolution.
 }
 \examples{
@@ -34,6 +34,7 @@ if (curl::has_internet()) {
   # Quick example (fetch 2 rows)
   small_sample <- nyc_311(limit = 2)
   small_sample
+
   nyc_311(filters = list(agency = "NYPD", city = "BROOKLYN"))
 }
 }

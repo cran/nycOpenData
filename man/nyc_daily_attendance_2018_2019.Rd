@@ -34,11 +34,10 @@ Daily listing (counts) of students registered, present, absent and released by S
 # do not fail when the network is unavailable or slow.
 \donttest{
 if (curl::has_internet()) {
-  # Quick example (fetch 10 rows)
-  small_sample <- nyc_daily_attendance_2018_2019(limit = 10)
-  head(small_sample)
+  # Quick example (fetch 2 rows)
+  small_sample <- nyc_daily_attendance_2018_2019(limit = 2)
+  small_sample
 
-  nyc_daily_attendance_2018_2019(limit = 5000)
   nyc_daily_attendance_2018_2019(filters = list(school_dbn = "01M015"))
 }
 }

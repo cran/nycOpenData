@@ -25,12 +25,11 @@ This dataset provides data regarding students enrolled
 in the closed schools according to the guidelines set by Local Law 43 of 2011.
 }
 \examples{
-# Quick example (fetch 10 rows)
-small_sample <- nyc_school_discharge_report_2015_2018(limit = 10)
-head(small_sample)
+# Quick example (fetch 2 rows)
+small_sample <- nyc_school_discharge_report_2015_2018(limit = 2)
+small_sample
 
 \donttest{
-nyc_school_discharge_report_2015_2018(limit = 5000)
 nyc_school_discharge_report_2015_2018(filters = list(geography = "Borough"))
 }
 }

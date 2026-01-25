@@ -35,11 +35,10 @@ Each row/record in this dataset represents the life cycle of one permit for one 
 # do not fail when the network is unavailable or slow.
 \donttest{
 if (curl::has_internet()) {
-  # Quick example (fetch 10 rows)
-  small_sample <- nyc_dob_permit_issuance(limit = 10)
-  head(small_sample)
+  # Quick example (fetch 2 rows)
+  small_sample <- nyc_dob_permit_issuance(limit = 2)
+  small_sample
 
-  nyc_dob_permit_issuance(limit = 5000)
   nyc_dob_permit_issuance(filters = list(borough = "BROOKLYN"))
 }
 }

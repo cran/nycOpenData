@@ -36,11 +36,10 @@ The police report (MV104-AN) is required to be filled out for collisions where s
 # do not fail when the network is unavailable or slow.
 \donttest{
 if (curl::has_internet()) {
-  # Quick example (fetch 10 rows)
-  small_sample <- nyc_motor_vehicle_collisions_crashes(limit = 10)
-  head(small_sample)
+  # Quick example (fetch 2 rows)
+  small_sample <- nyc_motor_vehicle_collisions_crashes(limit = 2)
+  small_sample
 
-  nyc_motor_vehicle_collisions_crashes(limit = 5000)
   nyc_motor_vehicle_collisions_crashes(filters = list(borough = "BROOKLYN"))
 }
 }

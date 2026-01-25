@@ -13,12 +13,11 @@
 #' @source NYC Open Data: <https://data.cityofnewyork.us/Education/2015-2018-School-Closure-Discharge-Reporting/abh8-frsx/about_data>
 #'
 #' @examples
-#' # Quick example (fetch 10 rows)
-#' small_sample <- nyc_school_discharge_report_2015_2018(limit = 10)
-#' head(small_sample)
+#' # Quick example (fetch 2 rows)
+#' small_sample <- nyc_school_discharge_report_2015_2018(limit = 2)
+#' small_sample
 #'
 #' \donttest{
-#' nyc_school_discharge_report_2015_2018(limit = 5000)
 #' nyc_school_discharge_report_2015_2018(filters = list(geography = "Borough"))
 #' }
 #' @export

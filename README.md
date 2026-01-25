@@ -1,13 +1,23 @@
 
-# nycOpenData <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/NYC_logo.svg/64px-NYC_logo.svg.png" align="right" width="60"/>
+# nycOpenData <img src="man/figures/logo.png" alt="nycOpenData logo" width="72" align="right" />
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/nycOpenData)](https://CRAN.R-project.org/package=nycOpenData)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/nycOpenData)](https://CRAN.R-project.org/package=nycOpenData)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![Codecov test
+coverage](https://codecov.io/gh/martinezc1/nycOpenData/graph/badge.svg)](https://app.codecov.io/gh/martinezc1/nycOpenData)
 
 `nycOpenData` provides simple, reproducible access to datasets from
 the  
 [NYC Open Data](https://opendata.cityofnewyork.us/) platform — directly
 from R,  
-with **no API keys** or manual downloads required.
+with **no API keys** or manual downloads required. The package is
+available on **CRAN**.
 
-Version **0.1.2** now includes wrappers for **15+ NYC Open Data APIs**,
+Version **0.1.5** now includes wrappers for **30+ NYC Open Data APIs**,
 covering:
 
 - 311 Service Requests  
@@ -30,7 +40,7 @@ via
 
 ## Installation
 
-### From **CRAN** (once published)
+### From **CRAN**
 
 ``` r
 install.packages("nycOpenData")
@@ -61,24 +71,29 @@ filtered <- nyc_311(
 head(filtered)
 ```
 
-    ## # A tibble: 6 × 35
-    ##   unique_key created_date           agency agency_name complaint_type descriptor
-    ##   <chr>      <chr>                  <chr>  <chr>       <chr>          <chr>     
-    ## 1 66797209   2025-11-12T02:04:55.0… NYPD   New York C… Illegal Parki… Parking P…
-    ## 2 66801994   2025-11-12T02:04:00.0… NYPD   New York C… Noise - Resid… Loud Musi…
-    ## 3 66801997   2025-11-12T02:02:18.0… NYPD   New York C… Noise - Resid… Loud Talk…
-    ## 4 66801875   2025-11-12T02:01:32.0… NYPD   New York C… Blocked Drive… No Access 
-    ## 5 66805223   2025-11-12T02:00:04.0… NYPD   New York C… Noise - Resid… Loud Musi…
-    ## 6 66803537   2025-11-12T01:59:25.0… NYPD   New York C… Illegal Parki… Blocked H…
-    ## # ℹ 29 more variables: location_type <chr>, incident_zip <chr>,
+    ## # A tibble: 6 × 37
+    ##   unique_key created_date agency agency_name complaint_type descriptor
+    ##   <chr>      <chr>        <chr>  <chr>       <chr>          <chr>     
+    ## 1 67591844   2026-01-24T… NYPD   New York C… Noise - Resid… Loud Talk…
+    ## 2 67583315   2026-01-24T… NYPD   New York C… Noise - Resid… Banging/P…
+    ## 3 67586147   2026-01-24T… NYPD   New York C… Noise - Resid… Banging/P…
+    ## 4 67591820   2026-01-24T… NYPD   New York C… Illegal Parki… Posted Pa…
+    ## 5 67583301   2026-01-24T… NYPD   New York C… Noise - Comme… Loud Musi…
+    ## 6 67587630   2026-01-24T… NYPD   New York C… Noise - Resid… Banging/P…
+    ## # ℹ 31 more variables: location_type <chr>, incident_zip <chr>,
     ## #   incident_address <chr>, street_name <chr>, cross_street_1 <chr>,
     ## #   cross_street_2 <chr>, intersection_street_1 <chr>,
     ## #   intersection_street_2 <chr>, address_type <chr>, city <chr>,
-    ## #   landmark <chr>, status <chr>, community_board <chr>, bbl <chr>,
-    ## #   borough <chr>, x_coordinate_state_plane <chr>,
-    ## #   y_coordinate_state_plane <chr>, open_data_channel_type <chr>, …
+    ## #   landmark <chr>, status <chr>, community_board <chr>,
+    ## #   council_district <chr>, police_precinct <chr>, bbl <chr>,
+    ## #   borough <chr>, x_coordinate_state_plane <chr>, …
 
 ------------------------------------------------------------------------
+
+## Learn by example
+
+- `vignette("nyc-311", package = "nycOpenData")` – Working with NYC 311
+  data end-to-end
 
 ## About
 
