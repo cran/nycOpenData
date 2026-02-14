@@ -10,3 +10,9 @@ test_that("nyc_311 returns a tibble and respects limits", {
     expect_equal(nrow(results), 2)
   })
 })
+
+test_that("nyc_311 throws errors for bad inputs", {
+  # This touches the new 'stop' lines you just added
+  expect_error(nyc_311(limit = "a string"))
+  expect_error(nyc_311(filters = "not a list"))
+})

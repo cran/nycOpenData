@@ -1,0 +1,32 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://data.cityofnewyork.us/resource/dpec-ucu7.json?%24limit=2&%24order=app_date+DESC
+  response:
+    status: 200
+    headers:
+      server: nginx
+      date: Tue, 27 Jan 2026 20:20:26 GMT
+      content-type: application/json;charset=utf-8
+      transfer-encoding: chunked
+      connection: keep-alive
+      access-control-allow-origin: '*'
+      etag: '"Zm94dHJvdC40OTI4NF8zXzEyMzkyc2RJdTVuSWFlTklNbUJlUzFwQUliQkNHUHdZ---gzipXdQKgk3WLxICPimnoCdQrET0Mw4--gzip--gzip"'
+      x-soda2-fields: '["app_no","type","app_date","status","fru_interview_scheduled","drug_test","wav_course","defensive_driving","driver_exam","medical_clearance_form","other_requirements","lastupdate"]'
+      x-soda2-types: '["number","text","floating_timestamp","text","text","text","text","text","text","text","text","floating_timestamp"]'
+      x-soda2-data-out-of-date: 'false'
+      x-soda2-truth-last-modified: Tue, 27 Jan 2026 17:13:35 GMT
+      x-soda2-secondary-last-modified: Tue, 27 Jan 2026 17:13:35 GMT
+      last-modified: Tue, 27 Jan 2026 17:13:35 GMT
+      vary: Accept-Encoding
+      content-encoding: gzip
+      age: '0'
+      x-socrata-region: aws-us-east-1-fedramp-prod
+      strict-transport-security: max-age=31536000; includeSubDomains
+      x-socrata-requestid: 948de877341513105d1a57fd3bbf3f47
+    body:
+      string: |
+        [{"app_no":"6131333","type":"HDR","app_date":"2026-01-27T00:00:00.000","status":"Incomplete","fru_interview_scheduled":"Not Applicable","drug_test":"Needed","wav_course":"Needed","defensive_driving":"Needed","driver_exam":"Needed","medical_clearance_form":"Needed","other_requirements":"Fingerprints needed; Copy of DMV license needed","lastupdate":"2026-01-27T11:00:01.000"}
+        ,{"app_no":"6131335","type":"HDR","app_date":"2026-01-27T00:00:00.000","status":"Incomplete","fru_interview_scheduled":"Not Applicable","drug_test":"Needed","wav_course":"Needed","defensive_driving":"Needed","driver_exam":"Needed","medical_clearance_form":"Needed","other_requirements":"Fingerprints needed; Copy of DMV license needed","lastupdate":"2026-01-27T11:00:01.000"}]
+  recorded_at: 2026-01-27 20:20:26
+recorded_with: VCR-vcr/2.1.0

@@ -1,0 +1,32 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://data.cityofnewyork.us/resource/bkfu-528j.json?%24limit=2&%24order=start_date_time+DESC
+  response:
+    status: 200
+    headers:
+      server: nginx
+      date: Tue, 27 Jan 2026 20:20:14 GMT
+      content-type: application/json;charset=utf-8
+      transfer-encoding: chunked
+      connection: keep-alive
+      access-control-allow-origin: '*'
+      etag: '"Z29sZi40OTg0Xzg5MV80MDA3RU9SLTV3dWpCRWJxMUZLMjZxZ1ZGTEdPVG5j---gziprcWmV_to6kovyGAyrfNIPDcH2ts--gzip--gzip"'
+      x-soda2-fields: '["event_id","event_name","start_date_time","end_date_time","event_agency","event_type","event_borough","event_location","event_street_side","street_closure_type","community_board","police_precinct"]'
+      x-soda2-types: '["number","text","floating_timestamp","floating_timestamp","text","text","text","text","text","text","text","text"]'
+      x-soda2-data-out-of-date: 'false'
+      x-soda2-truth-last-modified: Mon, 01 Dec 2025 20:26:04 GMT
+      x-soda2-secondary-last-modified: Mon, 01 Dec 2025 20:26:04 GMT
+      last-modified: Mon, 01 Dec 2025 20:26:04 GMT
+      vary: Accept-Encoding
+      content-encoding: gzip
+      age: '2'
+      x-socrata-region: aws-us-east-1-fedramp-prod
+      strict-transport-security: max-age=31536000; includeSubDomains
+      x-socrata-requestid: 5fc542f35015de5cb430498018f50a0d
+    body:
+      string: |
+        [{"event_agency":"43, "}
+        ,{"event_agency":"43, "}]
+  recorded_at: 2026-01-27 20:20:14
+recorded_with: VCR-vcr/2.1.0

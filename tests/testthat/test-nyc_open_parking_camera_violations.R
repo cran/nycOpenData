@@ -11,5 +11,10 @@ test_that("nyc_open_parking_camera_violations returns a tibble and respects limi
   })
 })
 
+test_that("nyc_open_parking_camera_violations throws errors for bad inputs", {
+  # This touches the new 'stop' lines you just added
+  expect_error(nyc_open_parking_camera_violations(limit = "a string"))
+  expect_error(nyc_open_parking_camera_violations(filters = "not a list"))
+})
 
 

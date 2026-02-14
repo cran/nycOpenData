@@ -1,0 +1,32 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://data.cityofnewyork.us/resource/k46n-sa2m.json?%24limit=2&%24order=date_of_census+DESC
+  response:
+    status: 200
+    headers:
+      server: nginx
+      date: Tue, 27 Jan 2026 20:19:59 GMT
+      content-type: application/json;charset=utf-8
+      transfer-encoding: chunked
+      connection: keep-alive
+      access-control-allow-origin: '*'
+      etag: '"Zm94dHJvdC4xNTY2N184XzMxOTBxVWk1dGVtZVJYYTU3XzhfOVZkSkdQM0FFanc---gzioQQC49MSRqEvf4Asw29i9NJ9m2UA--gzip--gzip"'
+      x-soda2-fields: '["date_of_census","total_adults_in_shelter","total_children_in_shelter","total_individuals_in_shelter","single_adult_men_in_shelter","single_adult_women_in_shelter","total_single_adults_in_shelter","families_with_children_in_shelter","adults_in_families_with_children_in_shelter","children_in_families_with_children_in_shelter","total_individuals_in_families_with_children_in_shelter_","adult_families_in_shelter","individuals_in_adult_families_in_shelter"]'
+      x-soda2-types: '["floating_timestamp","number","number","number","number","number","number","number","number","number","number","number","number"]'
+      x-soda2-data-out-of-date: 'false'
+      x-soda2-truth-last-modified: Tue, 27 Jan 2026 20:00:12 GMT
+      x-soda2-secondary-last-modified: Tue, 27 Jan 2026 20:00:12 GMT
+      last-modified: Tue, 27 Jan 2026 20:00:12 GMT
+      vary: Accept-Encoding
+      content-encoding: gzip
+      age: '2'
+      x-socrata-region: aws-us-east-1-fedramp-prod
+      strict-transport-security: max-age=31536000; includeSubDomains
+      x-socrata-requestid: 2b08c3cd0dbe4ceaf78a0de51a2a4a21
+    body:
+      string: |
+        [{"date_of_census":"2026-01-26T00:00:00.000","total_adults_in_shelter":"56151","total_children_in_shelter":"30545","total_individuals_in_shelter":"86696","single_adult_men_in_shelter":"18054","single_adult_women_in_shelter":"6977","total_single_adults_in_shelter":"25031","families_with_children_in_shelter":"17614","adults_in_families_with_children_in_shelter":"26208","children_in_families_with_children_in_shelter":"30545","total_individuals_in_families_with_children_in_shelter_":"56753","adult_families_in_shelter":"2259","individuals_in_adult_families_in_shelter":"4912"}
+        ,{"date_of_census":"2026-01-25T00:00:00.000","total_adults_in_shelter":"56192","total_children_in_shelter":"30561","total_individuals_in_shelter":"86753","single_adult_men_in_shelter":"18092","single_adult_women_in_shelter":"6974","total_single_adults_in_shelter":"25066","families_with_children_in_shelter":"17622","adults_in_families_with_children_in_shelter":"26221","children_in_families_with_children_in_shelter":"30561","total_individuals_in_families_with_children_in_shelter_":"56782","adult_families_in_shelter":"2255","individuals_in_adult_families_in_shelter":"4905"}]
+  recorded_at: 2026-01-27 20:19:59
+recorded_with: VCR-vcr/2.1.0

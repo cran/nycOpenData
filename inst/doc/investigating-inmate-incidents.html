@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Isley Jean-Pierre" />
+
+
+<title>Investigating Inmate Incidents</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Investigating Inmate Incidents</h1>
+<h4 class="author">Isley Jean-Pierre</h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This dataset contains information about the kind of violent incident
+that happens among inmates in prison. Each row provides the incident ID,
+the date the incident was reported, the incident type, and the facility
+where it occurred. A researcher might want to use this dataset to
+investigate the kind of crimes inmates commit while they are
+incarcerated.</p>
+<p>The <code>nycOpenData</code> package provides a streamlined interface
+for accessing New York City’s vast open data resources. It connects
+directly to the NYC Open Data Portal. It is currently utilized as a
+primary tool for teaching data acquisition in <a href="https://martinezc1-reproducible-research-using-r.share.connect.posit.cloud/">Reproducible
+Research Using R</a>, helping students bridge the gap between raw city
+APIs and tidy data analysis.</p>
+<p>By using the <code>nyc_slash_stab</code> function, we can investigate
+the most recent violent incidents that occurred among incarcerated
+individuals to understand their nature and fatality.</p>
+</div>
+<div id="lets-take-a-look-at-the-dataset." class="section level2">
+<h2>Let’s take a look at the dataset.</h2>
+<p>To start, let’s pull a small sample to see what the data looks like.
+By default, the function pulls in the <em>10,000 most recent</em>
+requests, however, let’s change that to only see the latest 3 requests.
+To do this, we can set <code>limit = 3</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>small_sample <span class="ot">&lt;-</span> <span class="fu">nyc_slash_stab</span>(<span class="at">limit =</span> <span class="dv">100</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>small_sample</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 100 × 4</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt;    incident_id reported_dt             incident_type facility</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;       &lt;chr&gt;                   &lt;chr&gt;         &lt;chr&gt;   </span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt;  1 227264      2026-01-24T21:10:00.000 Stabbing      GRVC    </span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt;  2 226926      2026-01-17T19:58:00.000 Stabbing      OBCC    </span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt;  3 226877      2026-01-16T17:51:00.000 Stabbing      NIC     </span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt;  4 226700      2026-01-13T15:10:00.000 Stabbing      GRVC    </span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt;  5 226465      2026-01-08T07:09:00.000 Stabbing      RNDC    </span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;  6 226408      2026-01-06T23:25:00.000 Stabbing      RMSC    </span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt;  7 226398      2026-01-06T19:34:00.000 Stabbing      GRVC    </span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt;  8 226206      2026-01-01T11:14:00.000 Stabbing      OBCC    </span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt;  9 226110      2025-12-30T13:21:00.000 Stabbing      EMTC    </span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; 10 225938      2025-12-26T20:33:00.000 Stabbing      OBCC    </span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; # ℹ 90 more rows</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co"># Seeing what columns are in the dataset</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="fu">colnames</span>(small_sample)</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; [1] &quot;incident_id&quot;   &quot;reported_dt&quot;   &quot;incident_type&quot; &quot;facility&quot;</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="fu">unique</span>(small_sample<span class="sc">$</span>facility)</span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; [1] &quot;GRVC&quot; &quot;OBCC&quot; &quot;NIC&quot;  &quot;RNDC&quot; &quot;RMSC&quot; &quot;EMTC&quot; &quot;RESH&quot;</span></span></code></pre></div>
+<p>The <code>nyc_slash_stab()</code> function can filter based off any
+of the columns in the dataset. To filter, we add
+<code>filters = list()</code> and put whatever filters we would like
+inside. From our <code>colnames</code> call before, we know that there
+is a column called “incident_type” which we can use to accomplish
+this.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>incident_slash_stab <span class="ot">&lt;-</span> <span class="fu">nyc_slash_stab</span>(<span class="at">limit =</span> <span class="dv">3</span>, <span class="at">filters =</span> <span class="fu">list</span>(<span class="at">incident_type =</span> <span class="st">&quot;Stabbing&quot;</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>incident_slash_stab</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 3</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt;   incident_id reported_dt             incident_type</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;                   &lt;chr&gt;        </span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; 1 76348       2016-02-10T02:49:00.000 Stabbing     </span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; 2 78554       2016-04-23T12:54:00.000 Stabbing     </span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; 3 79040       2016-05-08T23:18:00.000 Stabbing</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co"># Checking to see the filtering worked</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">unique</span>(incident_slash_stab<span class="sc">$</span>incident_type)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Stabbing&quot;</span></span></code></pre></div>
+</div>
+<div id="note." class="section level2">
+<h2>Note.</h2>
+<p>The previous sections were riddled with errors in my console! The
+next step would be to investigate the “facility” column and potentially
+run correlational analysis and plot the results between “incident_type”
+and “facility”.</p>
+</div>
+<div id="further-investigation." class="section level2">
+<h2>Further investigation.</h2>
+<p>This section was meant to look into the most recurring incident types
+among inmates and take note of their severity. But for future
+inquiries:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Creating the datasets</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>slash <span class="ot">&lt;-</span> <span class="fu">nyc_slash_stab</span>(<span class="at">limit =</span> <span class="dv">50</span>, <span class="at">filters =</span> <span class="fu">list</span>(<span class="at">facility =</span> <span class="st">&quot;AMKC&quot;</span>, <span class="at">incident_type =</span> <span class="st">&quot;Slashing&quot;</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>stab <span class="ot">&lt;-</span> <span class="fu">nyc_slash_stab</span>(<span class="at">limit =</span> <span class="dv">50</span>, <span class="at">filters =</span> <span class="fu">list</span>(<span class="at">facility =</span> <span class="st">&quot;AMKC&quot;</span>, <span class="at">incident_type =</span> <span class="st">&quot;Stabbing&quot;</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># Calling head of our new dataset</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="fu">head</span>(slash)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 4</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt;   incident_id reported_dt             incident_type facility</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;                   &lt;chr&gt;         &lt;chr&gt;   </span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 1 150379      2021-04-30T12:11:00.000 Slashing      AMKC    </span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 2 96849       2017-10-02T04:18:00.000 Slashing      AMKC    </span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; 3 97197       2017-10-11T08:27:00.000 Slashing      AMKC    </span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; 4 99471       2017-12-08T00:57:00.000 Slashing      AMKC    </span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; 5 102244      2018-02-14T01:30:00.000 Slashing      AMKC    </span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 6 103827      2018-03-27T11:34:00.000 Slashing      AMKC</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="fu">head</span>(stab)</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 4</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt;   incident_id reported_dt             incident_type facility</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;                   &lt;chr&gt;         &lt;chr&gt;   </span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; 1 98323       2017-11-09T22:45:00.000 Stabbing      AMKC    </span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; 2 101638      2018-01-30T09:26:00.000 Stabbing      AMKC    </span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; 3 122579      2019-07-16T21:02:00.000 Stabbing      AMKC    </span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; 4 122747      2019-07-20T14:17:00.000 Stabbing      AMKC    </span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; 5 127101      2019-10-29T20:17:00.000 Stabbing      AMKC    </span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; 6 134023      2020-04-06T19:42:00.000 Stabbing      AMKC</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co"># Quick check to make sure our filtering worked</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="fu">nrow</span>(slash)</span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt; [1] 50</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="fu">nrow</span>((stab))</span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt; [1] 50</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="fu">unique</span>(slash<span class="sc">$</span>facility)</span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt; [1] &quot;AMKC&quot;</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="fu">unique</span>(stab<span class="sc">$</span>facility)</span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt; [1] &quot;AMKC&quot;</span></span></code></pre></div>
+<p>This code should allow us to see how slashing and stabbing incidents
+vary by facilities.</p>
+</div>
+<div id="mini-analysis" class="section level2">
+<h2>Mini analysis</h2>
+<p>As an example of how this dataset can be used for exploratory
+analysis, the code below groups incidents by facility and incident type,
+then visualizes the resulting counts. This approach offers a
+straightforward way to compare patterns of violence across
+locations.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">nyc_slash_stab</span>(<span class="at">limit =</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">filter</span>(incident_type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Slashing&quot;</span>, <span class="st">&quot;Stabbing&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">count</span>(facility, incident_type, <span class="at">name =</span> <span class="st">&quot;count&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> incident_type, <span class="at">y =</span> count, <span class="at">fill =</span> facility)) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">&quot;dodge&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Slashing vs Stabbing Incidents by Facility&quot;</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Incident Type&quot;</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Number of Incidents&quot;</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;Facility&quot;</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="float">
+<img role="img" aria-label="This figure shows incident types by facility." src="data:image/png;base64,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" alt="This figure shows incident types by facility." />
+<div class="figcaption">This figure shows incident types by
+facility.</div>
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>The <code>nycOpenData</code> package serves as a robust interface for
+the NYC Open Data portal, streamlining the path from raw city APIs to
+actionable insights. By abstracting the complexities of data
+acquisition—such as pagination, type-casting, and complex filtering—it
+allows users to focus on analysis rather than data engineering.</p>
+<p>If certain codes had worked as intneded in this vignette, one could
+see how the package provides a seamless workflow for targeted data
+retrieval, automated filtering, and rapid visualization. Importantly,
+It’s worth noting that some sections need to be improved as soon as
+possible.</p>
+</div>
+<div id="how-to-cite" class="section level2">
+<h2>How to Cite</h2>
+<p>If you use this package for research or educational purposes, please
+cite it as follows:</p>
+<p>Martinez C (2026). nycOpenData: Convenient Access to NYC Open Data
+API Endpoints. R package version 0.1.6, <a href="https://martinezc1.github.io/nycOpenData/" class="uri">https://martinezc1.github.io/nycOpenData/</a>.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -10,3 +10,9 @@ test_that("nyc_city_record returns a tibble and respects limits", {
     expect_equal(nrow(results), 2)
   })
 })
+
+test_that("nyc_city_record throws errors for bad inputs", {
+  # This touches the new 'stop' lines you just added
+  expect_error(nyc_city_record(limit = "a string"))
+  expect_error(nyc_city_record(filters = "not a list"))
+})
