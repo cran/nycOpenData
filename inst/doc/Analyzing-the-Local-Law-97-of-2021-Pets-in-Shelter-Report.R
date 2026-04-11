@@ -4,54 +4,63 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----setup--------------------------------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 library(nycOpenData)
 library(ggplot2)
 library(dplyr)
 
 ## ----small-sample-------------------------------------------------------------
-small_sample <- nyc_locallaw97_shelter_pets(limit = 3)
-small_sample
+small_sample <- nyc_pull_dataset("5nux-zfmw", limit = 3)
 
 # Seeing what columns are in the dataset
-colnames(small_sample)
+names(small_sample)
 
 ## ----filter-year--------------------------------------------------------------
 
-recent_quarters <- nyc_locallaw97_shelter_pets(
+recent_quarters <- nyc_pull_dataset(
+  "5nux-zfmw", 
   limit = 3,
   filters = list(date_year = 2024))
 
 recent_quarters
 
 # Checking to see the filtering worked
-unique(recent_quarters$date_year)
+recent_quarters |>
+  distinct(date_year)
 
 ## ----filter-multiple----------------------------------------------------------
 # Creating the dataset
-pets_filtered <- nyc_locallaw97_shelter_pets(
+pets_filtered <- nyc_pull_dataset(
+  "5nux-zfmw",
   limit = 20,
   filters = list(
-    date_year = 2024,
-    had_pet = 1))
+    date_year = "2024",
+    number_of_birds = 0))
 
 # Calling head of our new dataset
-head(pets_filtered)
+pets_filtered |>
+  slice_head(n = 2)
 
 # Quick check to make sure our filtering worked
-nrow(pets_filtered)
-unique(pets_filtered$date_year)
-unique(pets_filtered$had_pet)
+pets_filtered |>
+  summarize(rows = n())
+
+pets_filtered |>
+  distinct(date_year)
+
+pets_filtered |>
+  distinct(number_of_birds)
 
 ## ----had-pet-year-graph, fig.alt="Bar chart showing the number of shelter applicants with pets by year.", fig.cap="Bar chart showing the number of shelter applicants with pets by year.", fig.height=5, fig.width=7----
 
-pets <- nyc_locallaw97_shelter_pets(limit = 100)
-pets$had_pet <- as.numeric(pets$had_pet)
+pets <- nyc_pull_dataset("5nux-zfmw", limit = 100)
+pets <- pets |>
+  mutate(had_pet = as.numeric(had_pet))
 
-# Summarize by year
-pet_by_year <- pets %>%
-  group_by(date_year) %>%
+# summarize by year
+pet_by_year <- pets |>
+  group_by(date_year) |>
   summarize(applicants_with_pets = sum(had_pet, na.rm = TRUE))
 
 # Plot

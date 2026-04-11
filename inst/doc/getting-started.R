@@ -8,43 +8,58 @@ knitr::opts_chunk$set(
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 library(nycOpenData)
 library(ggplot2)
+library(dplyr)
 
-## ----small-sample-------------------------------------------------------------
-small_sample <- nyc_311(limit = 3)
-small_sample
+## ----nyc-list-datasets--------------------------------------------------------
+nyc_list_datasets() |> head()
 
-# Seeing what columns are in the dataset
-colnames(small_sample)
+## ----nyc-311-pull-------------------------------------------------------------
+nyc_motor_vehicle_collisions_data <- nyc_pull_dataset(
+  dataset = "h9gi-nx95", limit = 2)
+
+nyc_motor_vehicle_collisions_data <- nyc_pull_dataset(
+  dataset = "motor_vehicle_collisions_crashes", limit = 2)
 
 ## ----filter-brooklyn----------------------------------------------------------
 
-brooklyn_311 <- nyc_311(limit = 3, filters = list(borough = "BROOKLYN"))
-brooklyn_311
+brooklyn_collisions <- nyc_pull_dataset(dataset = "h9gi-nx95",limit = 2, timeout_sec = 90, filters = list(borough = "BROOKLYN"))
+brooklyn_collisions
 
 # Checking to see the filtering worked
-unique(brooklyn_311$borough)
+brooklyn_collisions |>
+  distinct(borough)
 
 ## ----filter-brooklyn-nypd-----------------------------------------------------
 # Creating the dataset
-brooklyn_nypd <- nyc_311(limit = 50, filters = list(agency = "NYPD", borough = "BROOKLYN"))
+brooklyn_sedan <- nyc_pull_dataset("h9gi-nx95", limit = 50, timeout_sec = 90, filters = list(vehicle_type_code1 = "Sedan", borough = "BROOKLYN"))
 
 # Calling head of our new dataset
-head(brooklyn_nypd)
+brooklyn_sedan |>
+  slice_head(n = 6)
 
 # Quick check to make sure our filtering worked
-nrow(brooklyn_nypd)
-unique(brooklyn_nypd$agency)
-unique(brooklyn_nypd$borough)
+brooklyn_sedan |>
+  summarize(rows = n())
 
-## ----compaint-type-graph, fig.alt="Bar chart showing the frequency of NYPD-related 311 complaint types in Brooklyn from the 50 most recent service requests.", fig.cap="Bar chart showing the frequency of NYPD-related 311 complaint types in Brooklyn from the 50 most recent service requests.", fig.height=5, fig.width=7----
+brooklyn_sedan |>
+  distinct(vehicle_type_code1)
+
+brooklyn_sedan |>
+  distinct(borough)
+
+## ----compaint-type-graph, fig.alt="Bar chart showing the frequency of collision contributing factors in Brooklyn involving a Sedan.", fig.cap="ar chart showing the frequency of collision contributing factors in Brooklyn involving a Sedan.", fig.height=5, fig.width=7----
 # Visualizing the distribution, ordered by frequency
-ggplot(brooklyn_nypd, aes(y = reorder(complaint_type, complaint_type, length))) +
-  geom_bar(fill = "steelblue") +
+brooklyn_sedan |>
+  count(contributing_factor_vehicle_1) |>
+  ggplot(aes(
+    x = n,
+    y = reorder(contributing_factor_vehicle_1, n)
+  )) +
+  geom_col(fill = "steelblue") +
   theme_minimal() +
   labs(
-    title = "Most Recent NYPD 311 Complaints (Brooklyn)",
-    subtitle = "Top 50 service requests",
-    x = "Number of Complaints",
-    y = "Type of Complaint"
+    title = "Top 50 Collisions in Brooklyn Involving a Sedan",
+    x = "Number of Collisions",
+    y = "Contributing Factor"
   )
 

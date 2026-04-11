@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----setup--------------------------------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 library(nycOpenData)
 library(ggplot2)
@@ -12,36 +12,39 @@ library(dplyr)
 library(tidyr)
 
 ## ----small-sample-------------------------------------------------------------
-small_sample <- nyc_borough_population(limit = 5)
+small_sample <- nyc_pull_dataset("xywu-7bv9", limit = 5)
 small_sample
 
 # Seeing what columns are in the dataset
-colnames(small_sample)
+names(small_sample)
 
 ## ----full-data----------------------------------------------------------------
-population_data <- nyc_borough_population()
-head(population_data)
+population_data <- nyc_pull_dataset("xywu-7bv9")
+
+population_data |>
+  slice_head(n = 6)
 
 ## ----filter-brooklyn----------------------------------------------------------
-brooklyn_pop <- nyc_borough_population(filters = list(borough = "   Brooklyn"))
+brooklyn_pop <- nyc_pull_dataset("xywu-7bv9", filters = list(borough = "Brooklyn"))
+
 brooklyn_pop
 
 ## ----population-trends, fig.alt="Line chart showing population trends for NYC's five boroughs from 1950 to 2040.", fig.cap="Population trends for NYC's five boroughs from 1950 to 2040, including historical data and projections.", fig.height=6, fig.width=8----
 
 # Get full dataset and filter for Total Population rows only
-population_data <- nyc_borough_population()
+population_data <- nyc_pull_dataset("xywu-7bv9")
 
 # Clean borough names and filter to get individual boroughs (exclude NYC Total)
-borough_data <- population_data %>%
-  mutate(borough = trimws(borough)) %>%  # Remove leading/trailing spaces
+borough_data <- population_data |>
+  mutate(borough = trimws(borough)) |>  # Remove leading/trailing spaces
   filter(age_group == "Total Population", borough != "NYC Total")
 
 # Reshape from wide to long format
-pop_long <- borough_data %>%
-  select(borough, `_1950`, `_1960`, `_1970`, `_1980`, `_1990`, `_2000`, `_2010`, `_2020`, `_2030`, `_2040`) %>%
-  pivot_longer(cols = starts_with("_"), names_to = "year", values_to = "population") %>%
+pop_long <- borough_data |>
+  select(borough, `x1950`, `x1960`, `x1970`, `x1980`, `x1990`, `x2000`, `x2010`, `x2020`, `x2030`, `x2040`) |>
+  pivot_longer(cols = starts_with("x"), names_to = "year", values_to = "population") |>
   mutate(
-    year = as.numeric(gsub("_", "", year)),
+    year = as.numeric(gsub("x", "", year)),
     population = as.numeric(population)
   )
 
@@ -61,7 +64,7 @@ ggplot(pop_long, aes(x = year, y = population, color = borough)) +
   theme(legend.position = "bottom")
 
 ## ----summary-2040-------------------------------------------------------------
-pop_long %>%
-  filter(year == 2040) %>%
+pop_long |>
+  filter(year == 2040) |>
   arrange(desc(population))
 

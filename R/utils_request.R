@@ -1,7 +1,140 @@
-# Internal helpers for NYC Open Data requests
+# Internal helpers for NYC Open Data requests ####
 # - .nyc_endpoint(): constructs the Socrata endpoint URL from a dataset id
-# - .nyc_add_filters(): adds a Socrata $where clause from a named list of filters
+# - .nyc_add_filters(): adds equality filters (and IN() for multi-values) as a Socrata $where clause
+# - .nyc_add_where(): appends a raw SoQL WHERE expression (for ranges, >=, <, etc.)
+# - .nyc_validate_date_yyyy_mm_dd(): validates Date or "YYYY-MM-DD" inputs
+# - .nyc_build_date_where(): constructs server-side date filters using a dataset's default_date_field
 # - .nyc_get_json(): executes the request and returns parsed JSON (flattened)
+# - .nyc_dataset_request(): common pattern for dataset wrapper functions + input validation (r07/r08)
+
+.nyc_abort <- function(msg) {
+  stop(msg, call. = FALSE)
+}
+
+# light, safe type coercion (numeric/logical + ISO datetime when obvious)
+.nyc_coerce_types <- function(df) {
+  if (!inherits(df, "data.frame") || nrow(df) == 0) return(df)
+
+  is_iso_datetime <- function(x) {
+    # Strict-ish ISO datetime:
+    # 2025-02-18T12:34:56
+    # 2025-02-18T12:34:56.123
+    # optional trailing Z or timezone offset
+    grepl(
+      "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:?\\d{2})?$",
+      x
+    )
+  }
+
+  parse_iso_datetime_safe <- function(x) {
+    # Normalize common endings so base::strptime doesn't choke on Z / offsets
+    x3 <- sub("Z$", "", x)
+    x3 <- sub("([+-]\\d{2}:?\\d{2})$", "", x3)
+
+    tryCatch(
+      as.POSIXct(x3, tz = "UTC", format = "%Y-%m-%dT%H:%M:%OS"),
+      error = function(e) rep(as.POSIXct(NA), length(x3))
+    )
+  }
+
+  for (nm in names(df)) {
+    x <- df[[nm]]
+    if (!is.character(x)) next
+
+    x2 <- trimws(x)
+    x2[x2 == ""] <- NA_character_
+
+    # Logical
+    xl <- tolower(x2)
+    if (all(is.na(xl) | xl %in% c("true", "false"))) {
+      df[[nm]] <- as.logical(xl)
+      next
+    }
+
+    # Numeric (always numeric; never integer to avoid overflow warnings)
+    xn <- gsub(",", "", x2, fixed = TRUE)
+    ok_num <- grepl("^[-+]?(\\d+\\.?\\d*|\\d*\\.?\\d+)$", xn) | is.na(xn)
+    if (all(ok_num)) {
+      num <- suppressWarnings(as.numeric(xn))
+      if (all(is.na(xn) | !is.na(num))) {
+        df[[nm]] <- num
+        next
+      }
+    }
+
+    # ISO-ish datetime (only if it REALLY matches + is short enough)
+    non_na <- x2[!is.na(x2)]
+    if (length(non_na) > 0) {
+      # If strings are huge, do not attempt datetime parsing
+      if (max(nchar(non_na), na.rm = TRUE) <= 64) {
+        dt_ok <- is_iso_datetime(non_na)
+        if (sum(dt_ok) / length(non_na) >= 0.95) {
+          parsed <- parse_iso_datetime_safe(x2)
+          # Only apply if parsing succeeded for most non-missing
+          if (sum(!is.na(parsed[!is.na(x2)])) / length(non_na) >= 0.95) {
+            df[[nm]] <- parsed
+            next
+          }
+        }
+      }
+    }
+  }
+
+  df
+}
+
+.nyc_postprocess <- function(df, clean_names = TRUE, coerce_types = TRUE) {
+  if (!inherits(df, "data.frame")) return(df)
+
+  if (isTRUE(clean_names)) {
+    df <- janitor::clean_names(df)
+  }
+  if (isTRUE(coerce_types)) {
+    df <- .nyc_coerce_types(df)
+  }
+
+  tibble::as_tibble(df, .name_repair = "minimal")
+}
+
+.nyc_validate_limit <- function(limit) {
+  if (length(limit) != 1 || is.na(limit)) .nyc_abort("`limit` must be a single, non-missing numeric value.")
+  if (!is.numeric(limit)) .nyc_abort("`limit` must be a single numeric value.")
+  if (limit < 0) .nyc_abort("`limit` must be between 0 and Inf.")
+  if (limit != floor(limit)) .nyc_abort("`limit` must be an integer (whole number).")
+  as.integer(limit)
+}
+
+.nyc_validate_timeout <- function(timeout_sec) {
+  if (length(timeout_sec) != 1 || is.na(timeout_sec)) {
+    .nyc_abort("`timeout_sec` must be a single, non-missing numeric value.")
+  }
+  if (!is.numeric(timeout_sec)) {
+    .nyc_abort("`timeout_sec` must be a single numeric value.")
+  }
+  if (timeout_sec <= 0) {
+    .nyc_abort("`timeout_sec` must be > 0.")
+  }
+  timeout_sec
+}
+
+.nyc_validate_filters <- function(filters) {
+  if (is.null(filters) || length(filters) == 0) return(list())
+
+  if (!is.list(filters)) {
+    .nyc_abort("`filters` must be a named list.")
+  }
+  if (is.null(names(filters)) || any(!nzchar(names(filters)))) {
+    .nyc_abort("`filters` must be a *named* list (all elements must have names).")
+  }
+  if (any(vapply(filters, function(x) length(x) == 0, logical(1)))) {
+    .nyc_abort("`filters` values cannot be empty.")
+  }
+  if (anyNA(unlist(filters))) {
+    .nyc_abort("`filters` cannot contain NA values.")
+  }
+
+  filters
+}
 
 .nyc_endpoint <- function(dataset_id) {
   stopifnot(
@@ -9,7 +142,6 @@
     length(dataset_id) == 1,
     nzchar(dataset_id)
   )
-
   paste0("https://data.cityofnewyork.us/resource/", dataset_id, ".json")
 }
 
@@ -18,22 +150,54 @@
 
   stopifnot(is.list(filters))
 
-  # Escape single quotes defensively for Socrata WHERE clause:
-  # Socrata uses SQL-like quoting, where a literal single quote becomes ''
-  vals <- vapply(filters, function(x) gsub("'", "''", x, fixed = TRUE), character(1))
+  make_clause <- function(field, value) {
+    is_text <- is.character(value) || is.factor(value)
 
-  # Build "field = 'value'" clauses and join with AND for a Socrata $where
-  where_clauses <- paste0(names(filters), " = '", unlist(vals), "'")
-  query[["$where"]] <- paste(where_clauses, collapse = " AND ")
+    if (is.factor(value)) value <- as.character(value)
+    if (is.character(value)) value <- trimws(value)
+
+    value <- as.character(value)
+
+    if (is_text && any(!nzchar(value))) {
+      .nyc_abort("`filters` character values cannot be empty or whitespace-only.")
+    }
+
+    value <- gsub("'", "''", value, fixed = TRUE)
+    field_expr <- if (is_text) paste0("TRIM(", field, ")") else field
+
+    if (length(value) == 1) {
+      paste0(field_expr, " = '", value, "'")
+    } else {
+      vals <- paste0("'", value, "'", collapse = ", ")
+      paste0(field_expr, " IN (", vals, ")")
+    }
+  }
+
+  clauses <- mapply(make_clause, names(filters), filters, USE.NAMES = FALSE)
+  query[["$where"]] <- paste(clauses, collapse = " AND ")
 
   query
 }
 
+# Allow passing a raw SoQL where clause (e.g., date ranges, inequalities)
+.nyc_add_where <- function(query, where) {
+  if (is.null(where) || length(where) == 0) return(query)
+
+  if (!is.character(where) || length(where) != 1 || is.na(where)) {
+    .nyc_abort("`where` must be a single non-missing character string.")
+  }
+  if (!nzchar(where)) return(query)
+
+  if (!is.null(query[["$where"]]) && nzchar(query[["$where"]])) {
+    query[["$where"]] <- paste0("(", query[["$where"]], ") AND (", where, ")")
+  } else {
+    query[["$where"]] <- where
+  }
+
+  query
+}
 
 .nyc_get_json <- function(endpoint, query, timeout_sec = 30) {
-  # NOTE: This function assumes `endpoint` and `query` are already constructed.
-  # It is responsible only for request execution + error handling + JSON parsing.
-
   if (!curl::has_internet()) {
     stop(
       "No internet connection detected. This function requires access to data.cityofnewyork.us.",
@@ -74,4 +238,85 @@
 
   txt <- httr::content(resp, as = "text", encoding = "UTF-8")
   jsonlite::fromJSON(txt, flatten = TRUE)
+}
+
+.nyc_dataset_request <- function(dataset_id,
+                                 limit = 10000,
+                                 filters = list(),
+                                 order = NULL,
+                                 where = NULL,
+                                 timeout_sec = 30,
+                                 clean_names = TRUE,
+                                 coerce_types = TRUE) {
+
+  # Input validation (r08)
+  limit <- .nyc_validate_limit(limit)
+  timeout_sec <- .nyc_validate_timeout(timeout_sec)
+  filters <- .nyc_validate_filters(filters)
+
+  endpoint <- .nyc_endpoint(dataset_id)
+
+  query_list <- list("$limit" = limit)
+
+  if (!is.null(order)) {
+    if (!is.character(order) || length(order) != 1 || is.na(order) || !nzchar(order)) {
+      .nyc_abort("`order` must be a single non-empty character string.")
+    }
+    query_list[["$order"]] <- order
+  }
+
+  query_list <- .nyc_add_filters(query_list, filters)
+  query_list <- .nyc_add_where(query_list, where)
+
+  data <- .nyc_get_json(endpoint, query_list, timeout_sec = timeout_sec)
+
+  out <- tibble::as_tibble(data, .name_repair = "minimal")
+
+  # reviewer r16/r17: optional post-processing pipeline
+  out <- .nyc_postprocess(out, clean_names = clean_names, coerce_types = coerce_types)
+
+  out
+}
+
+# Validate Date or "YYYY-MM-DD" string input and return normalized "YYYY-MM-DD"
+.nyc_validate_date_yyyy_mm_dd <- function(x, arg) {
+  if (is.null(x)) return(NULL)
+  if (inherits(x, "Date")) return(format(x, "%Y-%m-%d"))
+
+  if (!is.character(x) || length(x) != 1 || is.na(x) || !nzchar(x)) {
+    .nyc_abort(paste0("`", arg, "` must be a Date or a non-missing 'YYYY-MM-DD' string."))
+  }
+  if (!grepl("^\\d{4}-\\d{2}-\\d{2}$", x)) {
+    .nyc_abort(paste0("`", arg, "` must be in 'YYYY-MM-DD' format."))
+  }
+  x
+}
+
+# Build a SoQL WHERE clause for date filtering using the dataset's date field
+.nyc_build_date_where <- function(date_field, date = NULL, from = NULL, to = NULL) {
+  if (is.null(date_field) || is.na(date_field) || !nzchar(date_field)) return(NULL)
+
+  date <- .nyc_validate_date_yyyy_mm_dd(date, "date")
+  from <- .nyc_validate_date_yyyy_mm_dd(from, "from")
+  to   <- .nyc_validate_date_yyyy_mm_dd(to, "to")
+
+  if (!is.null(date) && (!is.null(from) || !is.null(to))) {
+    .nyc_abort("Use either `date` OR `from`/`to`, not both.")
+  }
+
+  to_float_ts <- function(d) paste0(d, "T00:00:00.000")
+
+  if (!is.null(date)) {
+    start <- to_float_ts(date)
+    end_date <- format(as.Date(date) + 1, "%Y-%m-%d")
+    end <- to_float_ts(end_date)
+    return(paste0(date_field, " >= '", start, "' AND ", date_field, " < '", end, "'"))
+  }
+
+  parts <- character(0)
+  if (!is.null(from)) parts <- c(parts, paste0(date_field, " >= '", to_float_ts(from), "'"))
+  if (!is.null(to))   parts <- c(parts, paste0(date_field, " < '", to_float_ts(to), "'"))
+  if (length(parts) == 0) return(NULL)
+
+  paste(parts, collapse = " AND ")
 }

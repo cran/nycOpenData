@@ -12,35 +12,40 @@ library(dplyr)
 library(knitr)
 
 ## ----small-sample-------------------------------------------------------------
-small_sample <- nyc_wetlands(limit = 3)
+small_sample <- nyc_pull_dataset("p48c-iqtu", limit = 3)
 small_sample
 
 # Seeing what columns are in the dataset
-colnames(small_sample)
+names(small_sample)
 
 ## ----full-data----------------------------------------------------------------
-wetlands_data <- nyc_wetlands(limit = 100)
+wetlands_data <- nyc_pull_dataset("p48c-iqtu", limit = 100)
 
 # Let's take a look at what our full dataset looks like
-head(wetlands_data)
+wetlands_data |>
+  slice_head(n = 6)
 
 ## ----ver-status---------------------------------------------------------------
-unique(wetlands_data$verificationstatus)
+wetlands_data |>
+  distinct(verificationstatus)
 
 ## ----filter-brooklyn-nypd-----------------------------------------------------
 # Creating the dataset
-verified_wetlands <- wetlands_data %>% filter(verificationstatus != "Unverified")
+verified_wetlands <- wetlands_data |> filter(verificationstatus != "Unverified")
 
 # Quick check to make sure our filtering worked
-nrow(verified_wetlands)
-unique(verified_wetlands$verificationstatus)
+verified_wetlands |>
+  slice_head(n = 6)
+
+verified_wetlands |>
+  distinct(verificationstatus)
 
 ## ----year-summary-------------------------------------------------------------
-verified_per_year <- verified_wetlands %>% 
-  group_by(verificationstatusyear) %>% 
+verified_per_year <- verified_wetlands |> 
+  group_by(verificationstatusyear) |> 
   count(verificationstatusyear)
 
-verified_per_year %>% kable(caption = "Verified Wetland Features Per Year")
+verified_per_year |> kable(caption = "Verified Wetland Features Per Year")
 
 ## ----fig.width=7, fig.height=4------------------------------------------------
 ggplot(data = verified_wetlands, aes(x = classname)) +

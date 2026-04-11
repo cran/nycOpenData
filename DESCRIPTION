@@ -1,7 +1,7 @@
 Package: nycOpenData
 Type: Package
 Title: Convenient Access to NYC Open Data API Endpoints
-Version: 0.1.6
+Version: 0.2.1
 Authors@R: 
     c(
       person("Christian", "Martinez", 
@@ -48,16 +48,17 @@ Description: Provides a unified set of helper functions to access datasets
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.3
-Imports: httr, jsonlite, tibble, curl
-Suggests: dplyr, ggplot2, knitr, rmarkdown, scales, testthat (>=
-        3.0.0), tidyr, vcr (>= 0.6.0), webmockr
+Imports: httr, jsonlite, tibble, janitor, curl, dplyr, rlang
+Suggests: ggplot2, knitr, rmarkdown, scales, testthat (>= 3.0.0),
+        tidyr, vcr (>= 0.6.0), webmockr
 URL: https://martinezc1.github.io/nycOpenData/,
         https://github.com/martinezc1/nycOpenData
 BugReports: https://github.com/martinezc1/nycOpenData/issues
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Depends: R (>= 4.1.0)
 NeedsCompilation: no
-Packaged: 2026-02-14 15:20:39 UTC; christianmartinez
+Packaged: 2026-04-11 18:03:19 UTC; christianmartinez
 Author: Christian Martinez [aut, cre] (GitHub: martinezc1, ORCID:
     <https://orcid.org/0009-0005-6026-6454>),
   Crystal Adote [ctb] (GitHub: crystalna20),
@@ -71,4 +72,4 @@ Author: Christian Martinez [aut, cre] (GitHub: martinezc1, ORCID:
   Xinru Wang [ctb] (GitHub: xrwangxr)
 Maintainer: Christian Martinez <c.martinez0@outlook.com>
 Repository: CRAN
-Date/Publication: 2026-02-14 18:00:07 UTC
+Date/Publication: 2026-04-11 18:40:02 UTC

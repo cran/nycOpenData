@@ -1,25 +1,36 @@
+## ----include = FALSE----------------------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
 ## ----setup, include = FALSE---------------------------------------------------
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 library(nycOpenData)
 library(dplyr)
 library(ggplot2)
 
 ## -----------------------------------------------------------------------------
-data <- nyc_ha_violations()
+violations <- nyc_pull_dataset("im9z-53hg")
 
-head(data)
-
-## -----------------------------------------------------------------------------
-data %>%
-  count(boro_nm)
+violations |>
+  dplyr::slice_head(n = 6)
 
 ## -----------------------------------------------------------------------------
-data %>%
-  count(boro_nm) %>%
-  ggplot(aes(x = boro_nm, y = n)) +
-  geom_col() +
+borough_counts <- violations |>
+  count(boro_nm, sort = TRUE)
+
+borough_counts
+
+## -----------------------------------------------------------------------------
+borough_counts |>
+  ggplot(aes(x = reorder(boro_nm, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
   labs(
-    title = "Number of NYCHA Violations by Borough",
+    title = "Number of NYCHA Housing Maintenance Violations by Borough",
     x = "Borough",
     y = "Number of Violations"
-  )
+  ) +
+  theme_minimal()
 

@@ -4,31 +4,33 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----setup--------------------------------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 library(nycOpenData)
 library(ggplot2)
 library(dplyr)
 
 ## ----small-sample-------------------------------------------------------------
-small_sample <- nyc_locallaw18_payreport (limit = 3)
+small_sample <- nyc_pull_dataset("423i-ukqr", limit = 3)
 small_sample
 
 # Seeing what columns are in the dataset
-colnames(small_sample)
+names(small_sample)
 
 ## ----filter-brooklyn----------------------------------------------------------
 
-lessthan5_locallaw18payreport <- nyc_locallaw18_payreport(limit = 3, filters = list(number_of_employees = "<5"))
+lessthan5_locallaw18payreport <- nyc_pull_dataset("423i-ukqr", limit = 3, filters = list(number_of_employees = "<5"))
 lessthan5_locallaw18payreport 
 
 
 # Checking to see the filtering worked
-unique(lessthan5_locallaw18payreport)
+lessthan5_locallaw18payreport |>
+  distinct(number_of_employees)
 
 ## ----filter-brooklyn-nypd-----------------------------------------------------
 # Creating the dataset
-lessthan5TI_payreport <- nyc_locallaw18_payreport(
+lessthan5TI_payreport <- nyc_pull_dataset(
+  "423i-ukqr",
   limit = 15,
   filters = list(
     number_of_employees = "<5",
@@ -37,21 +39,26 @@ lessthan5TI_payreport <- nyc_locallaw18_payreport(
   )
 )
 
-
 # Calling head of our new dataset
-head(lessthan5TI_payreport)
+lessthan5TI_payreport |>
+  slice_head(n = 6)
 
 # Quick check to make sure our filtering worked
-nrow(lessthan5TI_payreport)
-unique(lessthan5TI_payreport$agency_name)
-unique(lessthan5TI_payreport$gender)
+lessthan5TI_payreport |>
+  summarize(rows = n())
 
-## ----compaint-type-graph, fig.alt="Bar chart showing the ethnicity of female workers in departments with less than 5 employees in Technology & Innovation.", fig.cap="Bar chart showing the ethnicity of female workers in municipal departments with less than 5 people in Technology & Innovation (15 most recent.", fig.height=5, fig.width=7----
+lessthan5TI_payreport |>
+  distinct(agency_name)
+
+lessthan5TI_payreport |>
+  distinct(gender)
+
+## ----compaint-type-graph, fig.alt="Bar chart showing the ethnicity of female workers in departments with less than 5 employees in Technology & Innovation.", fig.cap="Bar chart showing the ethnicity of female workers in municipal departments with less than 5 people in Technology & Innovation (15 most recent).", fig.height=5, fig.width=7----
 
 # Visualizing the distribution, ordered by frequency
 
-lessthan5TI_payreport %>%
-  count(ethnicity) %>%          # count how many rows fall in each ethnicity
+lessthan5TI_payreport |>
+  count(ethnicity) |>          # count how many rows fall in each ethnicity
   ggplot(aes(
     x = n,                       # n = number of rows per ethnicity
     y = reorder(ethnicity, n)    # reorder ethnicities by their counts
