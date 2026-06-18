@@ -11,7 +11,11 @@ library(ggplot2)
 library(dplyr)
 
 ## ----nyc-list-datasets--------------------------------------------------------
-nyc_list_datasets() |> head()
+catalog <- nyc_list_datasets()
+
+catalog |>
+  filter(grepl("collision", name, ignore.case = TRUE)) |>
+  select(key, uid, name)
 
 ## ----nyc-311-pull-------------------------------------------------------------
 nyc_motor_vehicle_collisions_data <- nyc_pull_dataset(
@@ -47,7 +51,7 @@ brooklyn_sedan |>
 brooklyn_sedan |>
   distinct(borough)
 
-## ----compaint-type-graph, fig.alt="Bar chart showing the frequency of collision contributing factors in Brooklyn involving a Sedan.", fig.cap="ar chart showing the frequency of collision contributing factors in Brooklyn involving a Sedan.", fig.height=5, fig.width=7----
+## ----compaint-type-graph, fig.alt="Bar chart showing the frequency of collision contributing factors in Brooklyn involving a Sedan.", fig.cap="Bar chart showing the frequency of collision contributing factors in Brooklyn involving a Sedan.", fig.height=5, fig.width=7----
 # Visualizing the distribution, ordered by frequency
 brooklyn_sedan |>
   count(contributing_factor_vehicle_1) |>

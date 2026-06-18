@@ -1,7 +1,7 @@
 Package: nycOpenData
 Type: Package
-Title: Convenient Access to NYC Open Data API Endpoints
-Version: 0.2.1
+Title: A Lightweight Interface to NYC Open Data APIs
+Version: 0.2.2
 Authors@R: 
     c(
       person("Christian", "Martinez", 
@@ -58,7 +58,7 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Depends: R (>= 4.1.0)
 NeedsCompilation: no
-Packaged: 2026-04-11 18:03:19 UTC; christianmartinez
+Packaged: 2026-06-18 01:44:58 UTC; christianmartinez
 Author: Christian Martinez [aut, cre] (GitHub: martinezc1, ORCID:
     <https://orcid.org/0009-0005-6026-6454>),
   Crystal Adote [ctb] (GitHub: crystalna20),
@@ -72,4 +72,4 @@ Author: Christian Martinez [aut, cre] (GitHub: martinezc1, ORCID:
   Xinru Wang [ctb] (GitHub: xrwangxr)
 Maintainer: Christian Martinez <c.martinez0@outlook.com>
 Repository: CRAN
-Date/Publication: 2026-04-11 18:40:02 UTC
+Date/Publication: 2026-06-18 08:10:08 UTC
